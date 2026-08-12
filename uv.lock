@@ -76,7 +76,7 @@ wheels = [
 [[package]]
 name = "kotak-trader"
 version = "0.1.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "neo-api-client" },
     { name = "pyotp" },

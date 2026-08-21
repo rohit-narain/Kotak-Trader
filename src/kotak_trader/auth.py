@@ -56,6 +56,7 @@ totp_secret = os.getenv("KOTAK_TOTP_SECRET")
 # # Login using TOTP
 
 # access_token = load_token()
+
 def get_authenticated_client():
     print("Authenticating...")
     client = NeoAPI(environment='prod', consumer_key=consumer_key)
@@ -67,6 +68,7 @@ def get_authenticated_client():
         response = client.totp_login(mobile_number=mobile, ucc=client_code, totp=otp)
         client.totp_validate(mpin=mpin)
         return client
+        print("Authenticated successfully.")
     except Exception as e:
         print("Exception:", type(e).__name__)
         print("Message:", str(e))

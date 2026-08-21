@@ -2,6 +2,7 @@ from __future__ import annotations
 import json
 import time
 from datetime import datetime, timezone
+from venv import logger
 from kotak_trader.database import get_connection
 
 def utc_now_ns():
@@ -16,6 +17,32 @@ def as_float(value):
 def as_int(value):
     return None if value in (None, "") else int(float(value))
 
+def normalize_timestamp(timestamp: str | None) -> str | None:
+    """
+    Convert Kotak timestamp:
+        DD/MM/YYYY HH:MM:SS
+
+    to:
+        YYYY-MM-DDTHH:MM:SS
+    """
+    if not timestamp:
+        return None
+
+    try:
+        return datetime.strptime(
+            timestamp.strip(),
+            "%d/%m/%Y %H:%M:%S",
+        ).isoformat(timespec="seconds")
+
+    except ValueError:
+        logger.warning(
+            "Invalid Kotak timestamp: %r",
+            timestamp,
+        )
+        return None
+
+
+
 TICK_INSERT = """
 INSERT INTO market_ticks (
     message_id, received_at_ns, feed_timestamp, last_trade_timestamp,
@@ -29,7 +56,7 @@ INSERT INTO market_ticks (
 def normalize_tick(tick, message_id, received_at_ns):
     # Kotak can send partial/delta updates. Missing fields stay NULL.
     return (
-        message_id, received_at_ns, tick.get("fdtm"), tick.get("ltt"),
+        message_id, received_at_ns, normalize_timestamp(tick.get("fdtm")), normalize_timestamp(tick.get("ltt")),
         str(tick["tk"]), tick["e"],
         as_float(tick.get("ltp")), as_float(tick.get("cng")),
         as_float(tick.get("nc")), as_int(tick.get("v")),

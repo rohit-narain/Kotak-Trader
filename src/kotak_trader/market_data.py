@@ -330,27 +330,12 @@ def connect_and_subscribe():
         attempt = current_connection_attempt
 
     logger.info(
-        "=================================================="
-    )
-
-    logger.info(
-        "Connecting to Kotak WebSocket"
-    )
-
-    logger.info(
-        "Connection attempt: %d",
-        attempt,
-    )
-
-    logger.info(
-        "Market hours: %s",
-        is_market_hours(),
-    )
-
-    logger.info(
-        "=================================================="
-    )
-
+        f"""==================================================
+             Connecting to Kotak WebSocket
+             Connection attempt: {attempt}"
+             Market hours: {is_market_hours()}"
+        ==================================================""")
+ 
     log_ws_event(
         "CONNECTING",
         f"Connection attempt {attempt}",
